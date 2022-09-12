@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "nodemon src/index.js",
-    "start": "node src/index.js",
+    "start": "npm i && node src/index.js",
     "up": "yarn-upgrade-all"
   },
   "dependencies": {
