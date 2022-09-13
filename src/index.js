@@ -29,5 +29,4 @@ app.use(
 
 app.use(require("./routes"));
 
-app.listen(4000);
-exports.app = functions.https.onRequest(app);
+app.listen(process.env.PORT || process.env.port || 4000);
