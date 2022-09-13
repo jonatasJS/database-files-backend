@@ -7,6 +7,7 @@ const multerS3 = require("multer-s3");
 const storageTypes = {
   local: multer.diskStorage({
     destination: (req, file, cb) => {
+      console.log(path.resolve(__dirname, "..", "..", "tmp", "uploads"));
       cb(null, path.resolve(__dirname, "..", "..", "tmp", "uploads"));
     },
     filename: (req, file, cb) => {
