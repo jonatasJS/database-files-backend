@@ -42,7 +42,7 @@ const storageTypes = {
 
 module.exports = {
   dest: path.resolve(__dirname, "..", "..", "tmp", "uploads"),
-  storage: storageTypes.local, //[process.env.STORAGE_TYPE],
+  storage: storageTypes.s3, //[process.env.STORAGE_TYPE],
   limits: {
     fileSize: 2 * 1024 * 1024
   },
