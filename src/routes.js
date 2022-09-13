@@ -11,6 +11,7 @@ routes.get("/posts", async (req, res) => {
 }); 
 
 routes.post("/posts", multer(multerConfig).single("file"), async (req, res) => {
+  console.log(req.file);
   const {
     originalname,
     size,
