@@ -8,39 +8,45 @@ routes.get("/posts", async (req, res) => {
   const posts = await Post.find();
 
   return res.json(posts);
-}); 
+});
 
 routes.post("/posts", multer(multerConfig).single("file"), async (req, res) => {
-  console.log(req.file);
-  const {
-    originalname,
-    size,
-    key,
-    location
-  } = req.file;
+  try {
+    const { originalname, size, key, location: url = "" } = req.file;
 
-  const post = await Post.create({
-    name: originalname,
-    size,
-    key,
-    url: location || ""
-  }).then(postProp => {
-    post.save();
-    return res.json({post, postProp});
-  }).catch(err => {
-    return res.json(err);
-  });
+    const post = await Post.create({
+      name: originalname,
+      size,
+      key,
+      url,
+    });
 
-
-  // return res.json(post);
+    return res.json(post);
+  } catch (err) {
+    return res.status(500).json({ error: err });
+  }
 });
 
 routes.delete("/posts/:id", async (req, res) => {
-  const post = await Post.findById(req.params.id);
+  try {
+    const post = await Post.findById(req.params.id);
 
-  await post.remove();
+    await post.remove();
 
-  return res.send();
+    return res.send();
+  } catch (err) {
+    return res.status(400).send({ error: "Error deleting post", err });
+  }
+});
+
+routes.get("/posts/:id", async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+
+    return res.json(post);
+  } catch (err) {
+    return res.status(400).send({ error: "Error deleting post" });
+  }
 });
 
 module.exports = routes;
