@@ -12,7 +12,7 @@ const storageTypes = {
       crypto.randomBytes(16, (err, hash) => {
         if (err) cb(err);
 
-        file.key = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDay()}-${new Date().getHours()}-${new Date().getMinutes()}-${new Date().getSeconds()}-${hash.toString("hex")}-${file.originalname}`;
+        file.key = `${hash.toString("hex")}-${file.originalname}`;
 
         cb(null, file.key);
       });
@@ -30,7 +30,7 @@ const storageTypes = {
       crypto.randomBytes(16, (err, hash) => {
         if (err) cb(err);
 
-        const fileName = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDay()}-${new Date().getHours()}-${new Date().getMinutes()}-${new Date().getSeconds()}-${hash.toString("hex")}-${file.originalname}`;
+        const fileName = `${hash.toString("hex")}-${file.originalname}`;
 
         cb(null, fileName);
       });
