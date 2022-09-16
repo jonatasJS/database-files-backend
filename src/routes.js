@@ -33,7 +33,9 @@ routes.delete("/posts/:id", async (req, res) => {
 
     await post.remove();
 
-    return res.send();
+    return res.send({
+      message: "Post removido com sucesso!"
+    });
   } catch (err) {
     return res.status(400).send({ error: "Error deleting post", err });
   }
