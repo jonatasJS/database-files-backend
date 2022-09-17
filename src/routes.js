@@ -74,7 +74,7 @@ routes.post("/registeruser", async (req, res) => {
 
     return res.json({
       user,
-      token: await bcrypt.hash(user.email, 10),
+      token: user._id,
     });
   } catch (error) {
     return res.status(500).json(error);
@@ -98,7 +98,7 @@ routes.post("/authenticate", async (req, res) => {
     
     user.password = undefined;
     
-    return res.send({ user, token: await bcrypt.hash(user.email, 10) });
+    return res.send({ user, token: user._id });
   } catch (err) {
     return res.status(400).send({ error: "Error authenticating user" });
   }
@@ -131,6 +131,23 @@ routes.delete("/user/:id", async (req, res) => {
     });
   } catch (err) {
     return res.status(400).send({ error: "Error deleting user", err });
+  }
+});
+
+// tota para verificar se o token é válido
+routes.post("/validatetoken", async (req, res) => {
+  try {
+    const { token } = req.body;
+    
+    const user = await User.findOne({ _id: token });
+
+    if (!user) {
+      return res.status(400).send({ error: "User not found" });
+    }
+
+    return res.send({ user, token: user._id });
+  } catch (err) {
+    return res.status(400).send({ error: "Error authenticating user" });
   }
 });
 
