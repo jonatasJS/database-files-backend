@@ -58,9 +58,10 @@ routes.post("/registeruser", async (req, res) => {
     const { username, email, password } = req.body;
 
     // verificando se o email já existe
-    const userExists = await User.findOne({ email });
+    const emailExists = await User.findOne({ email });
+    const userExists = await User.findOne({ username });
 
-    if (userExists) {
+    if (userExists || emailExists) {
       return res.status(400).send({ error: "User already exists" });
     }
 
