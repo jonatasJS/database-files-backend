@@ -217,4 +217,44 @@ routes.get("/sendemailresetpassword/:email", async (req, res) => {
   }
 });
 
+routes.post("/resetpass", async (req, res) => {
+  try {
+    const { 
+      token,
+      password,
+      confimPassword
+    } = req.body;
+
+    // verifica se os dados vindos do body estão preenchidos
+    if (token === "" ||
+        password === "" ||
+        confimPassword === "" ||
+        token === null ||
+        password === null ||
+        confimPassword === null) {
+      return res.status(400).send({ error: "Preencha todos os campos!" });
+    }
+
+    // procura o usuário pelo token
+    const user = await User.findOne({ _id: token });
+    
+    if (!user) {
+      return res.status(400).send({ error: "User not found" });
+    }
+
+    // Auterar a senha do usuário
+    user.password = await bcrypt.hash(password, 10);
+    await user.save();
+
+    return res.send({ 
+      message: "Senha alterada com sucesso!",
+      user,
+      token: user._id
+     });
+  } catch (err) {
+    console.log(err);
+    return res.status(400).send({ error: "Error authenticating user" });
+  } 
+})
+
 module.exports = routes;

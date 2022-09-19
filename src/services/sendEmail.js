@@ -28,7 +28,7 @@ function sendEmail({ to, user }) {
                       <tr>
                         <td style="text-align:center;">
                           <a href="https://database.jonatas.app/" title="Batabase" target="_blank">
-                            <img width="60" src="https://database.jonatas.app/favicon.png" title="Database logo" alt="Database logo">
+                            <img width="60" src="https://database.jonatas.app/database.png" title="Database logo" alt="Database logo">
                           </a>
                         </td>
                       </tr>
@@ -50,7 +50,7 @@ function sendEmail({ to, user }) {
                                   <strong style="display: block;font-size: 13px; margin: 0 0 4px; color:rgba(0,0,0,.64); font-weight:normal;">Username</strong>${user.username}
                                 </p>
             
-                                <a href="#" style="background:#20e277;text-decoration:none !important; display:inline-block; font-weight:500; margin-top:24px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">Reset Pass</a>
+                                <a href="https://database.jonatas.app/reset/${user._id}" style="background:#20e277;text-decoration:none !important; display:inline-block; font-weight:500; margin-top:24px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">Reset Pass</a>
                               </td>
                             </tr>
                             <tr>
@@ -64,7 +64,7 @@ function sendEmail({ to, user }) {
                       </tr>
                       <tr>
                         <td style="text-align:center;">
-                          <p style="font-size:14px; color:rgba(69, 80, 86, 0.7411764705882353); line-height:18px; margin:0 0 0;">&copy; <strong>https://database.jonatas.app/</strong> </p>
+                          <p style="font-size:14px; color:rgba(69, 80, 86, 0.7411764705882353); line-height:18px; margin:0 0 0;">&copy; <strong>database.jonatas.app</strong> </p>
                         </td>
                       </tr>
                       <tr>
