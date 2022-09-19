@@ -1,8 +1,8 @@
 const routes = require("express").Router();
 const multer = require("multer");
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
+// const jwt = require('jsonwebtoken');
+const sendEmail = require("./services/sendEmail");
 
 const multerConfig = require("./config/multer");
 
@@ -172,7 +172,7 @@ routes.post("/validatetoken", async (req, res) => {
 });
 
 // envia email para redefinir a senha
-routes.get("/resetpassword/:email", async (req, res) => {
+routes.get("/sendemailresetpassword/:email", async (req, res) => {
   try {
     const { email } = req.params;
 
@@ -194,39 +194,21 @@ routes.get("/resetpassword/:email", async (req, res) => {
     }
 
     // envia email para o usuário
-    const transporter = await nodemailer.createTransport({
-      host: "smtp.mailtrap.io",
-      port: 2525,
-      secure: true,
-      auth: {
-        user: process.env.USER,
-        pass: process.env.PASSWORD,
-        method: "PLAIN",
-        type: "custom",
-      }
+
+    const message = {
+        to: user.email,
+        user
+      };
+
+    await sendEmail(message).then(() => {
+      console.log("Email enviado com sucesso!");
+      return res.status(200).send({ message: "Email enviado com sucesso!" });
+    }).catch((err) => {
+      console.log("Erro ao enviar email!");
+      return res.status(400).send({ error: "Erro ao enviar email!" });
     });
 
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: user.email,
-      subject: "Redefinir senha",
-      text: "Redefinir senha",
-      html: `<p>Olá ${user.username},</p>
-      <p>Para redefinir sua senha, clique no link abaixo:</p>
-      <a href="http://localhost:3000/resetpassword/${user._id}">Redefinir senha</a>`,
-    };
-
-    await transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.log(error);
-        return res.status(400).send({ error: "Error sending email" });
-      } else {
-
-        return res.status(200).send({
-          message: "Email enviado com sucesso!"
-        });
-      }
-    });
+    // return res.status(200).send({ message: "Email enviado com sucesso!" });
 
     // return res.send({ message: "Email enviado com sucesso!" });
   } catch (err) {
