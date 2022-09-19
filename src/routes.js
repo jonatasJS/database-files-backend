@@ -1,6 +1,8 @@
 const routes = require("express").Router();
 const multer = require("multer");
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 
 const multerConfig = require("./config/multer");
 
@@ -57,6 +59,16 @@ routes.post("/registeruser", async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
+    // verifica se os dados vindos do body estão preenchidos
+    if (username === "" ||
+        email === "" ||
+        password === "" ||
+        username === null ||
+        email === null ||
+        password === null) {
+      return res.status(400).send({ error: "Preencha todos os campos!" });
+    }
+
     // verificando se o email já existe
     const emailExists = await User.findOne({ email });
     const userExists = await User.findOne({ username });
@@ -68,7 +80,7 @@ routes.post("/registeruser", async (req, res) => {
     // Criar um novo usuário com a senha criptografada
     const user = await User.create({
       username,
-      email: await bcrypt.hash(email, 10),
+      email: email,
       password: await bcrypt.hash(password, 10),
     });
 
@@ -84,6 +96,14 @@ routes.post("/registeruser", async (req, res) => {
 routes.post("/authenticate", async (req, res) => {
   try {
     const { username, password } = req.body;
+
+    // verifica se os dados vindos do body estão preenchidos
+    if (username === "" ||
+        password === "" ||
+        username === null ||
+        password === null) {
+      return res.status(400).send({ error: "Preencha todos os campos!" });
+    }
     
     const user = await User.findOne({ username }).select("+password");
 
@@ -147,6 +167,70 @@ routes.post("/validatetoken", async (req, res) => {
 
     return res.send({ user, token: user._id });
   } catch (err) {
+    return res.status(400).send({ error: "Error authenticating user" });
+  }
+});
+
+// envia email para redefinir a senha
+routes.get("/resetpassword/:email", async (req, res) => {
+  try {
+    const { email } = req.params;
+
+    // verifica se os dados vindos do body estão preenchidos
+    if (email === "" ||
+        email === null) {
+      return res.status(400).send({ error: "Preencha todos os campos!" });
+    }
+
+    // procura o usuário pelo email
+    const user = await User.findOne({email});
+    console.log(user);
+
+    if (!user) {
+      console.log(email)
+      console.log(user);
+      console.log("User not found");	
+      return res.status(400).send({ error: "User not found" });
+    }
+
+    // envia email para o usuário
+    const transporter = await nodemailer.createTransport({
+      host: "smtp.mailtrap.io",
+      port: 2525,
+      secure: true,
+      auth: {
+        user: process.env.USER,
+        pass: process.env.PASSWORD,
+        method: "PLAIN",
+        type: "custom",
+      }
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: user.email,
+      subject: "Redefinir senha",
+      text: "Redefinir senha",
+      html: `<p>Olá ${user.username},</p>
+      <p>Para redefinir sua senha, clique no link abaixo:</p>
+      <a href="http://localhost:3000/resetpassword/${user._id}">Redefinir senha</a>`,
+    };
+
+    await transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+        return res.status(400).send({ error: "Error sending email" });
+      } else {
+
+        return res.status(200).send({
+          message: "Email enviado com sucesso!"
+        });
+      }
+    });
+
+    // return res.send({ message: "Email enviado com sucesso!" });
+  } catch (err) {
+    console.log(err);
     return res.status(400).send({ error: "Error authenticating user" });
   }
 });
