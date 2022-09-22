@@ -59,6 +59,8 @@ routes.post("/registeruser", async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
+    console.log(req.body);
+
     // verifica se os dados vindos do body estão preenchidos
     if (username === "" ||
         email === "" ||
@@ -74,7 +76,7 @@ routes.post("/registeruser", async (req, res) => {
     const userExists = await User.findOne({ username });
 
     if (userExists || emailExists) {
-      return res.status(400).send({ error: "User already exists" });
+      return res.status(400).send({ error: "Email ou Username já cadastrado!" });
     }
 
     // Criar um novo usuário com a senha criptografada
@@ -108,12 +110,12 @@ routes.post("/authenticate", async (req, res) => {
     const user = await User.findOne({ username }).select("+password");
 
     if (!user) {
-      return res.status(400).send({ error: "User not found" });
+      return res.status(400).send({ error: "Usuário não encontrado." });
     }
 
     // Verificando se a senha está correta
     if (!(await bcrypt.compare(password, user.password))) {
-      return res.status(400).send({ error: "Invalid password" });
+      return res.status(400).send({ error: "Senha invalida!" });
     }
     
     user.password = undefined;
@@ -147,7 +149,7 @@ routes.delete("/user/:id", async (req, res) => {
     await user.remove();
 
     return res.send({
-      message: "User removido com sucesso!"
+      message: "User removido!"
     });
   } catch (err) {
     return res.status(400).send({ error: "Error deleting user", err });
@@ -162,7 +164,7 @@ routes.post("/validatetoken", async (req, res) => {
     const user = await User.findOne({ _id: token });
 
     if (!user) {
-      return res.status(400).send({ error: "User not found" });
+      return res.status(400).send({ error: "Usuário não encontrado." });
     }
 
     return res.send({ user, token: user._id });
@@ -189,8 +191,8 @@ routes.get("/sendemailresetpassword/:email", async (req, res) => {
     if (!user) {
       console.log(email)
       console.log(user);
-      console.log("User not found");	
-      return res.status(400).send({ error: "User not found" });
+      console.log("Usuário não encontrado.");	
+      return res.status(400).send({ error: "Usuário não encontrado." });
     }
 
     // envia email para o usuário
@@ -239,7 +241,7 @@ routes.post("/resetpass", async (req, res) => {
     const user = await User.findOne({ _id: token });
     
     if (!user) {
-      return res.status(400).send({ error: "User not found" });
+      return res.status(400).send({ error: "Usuário não encontrado." });
     }
 
     // Auterar a senha do usuário
