@@ -138,7 +138,7 @@ routes.get("/users", async (req, res) => {
     return {
       _id,
       username,
-      email: bcrypt.hash(email, 10),
+      email,
       createdAt,
     }
   });
