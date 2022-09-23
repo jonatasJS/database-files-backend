@@ -129,12 +129,26 @@ routes.post("/authenticate", async (req, res) => {
 routes.get("/users", async (req, res) => {
   const users = await User.find();
 
-  return res.json(users);
+  const usersfromt = users.map(({
+    _id,
+    username,
+    email,
+    createdAt,
+  }) => {
+    return {
+      _id,
+      username,
+      email: bcrypt.hash(email, 10),
+      createdAt,
+    }
+  });
+
+  return res.json(usersfromt);
 });
 
-routes.get("/user/:id", async (req, res) => {
+routes.get("/user/:username", async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findOne({ username: req.params.username });
 
     return res.json(user);
   } catch (err) {
